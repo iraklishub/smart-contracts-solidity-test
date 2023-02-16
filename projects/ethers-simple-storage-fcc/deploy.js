@@ -1,22 +1,26 @@
-const ethers = require("ethers");
-const fs = require("fs");
+const ethers = require("ethers")
+const fs = require("fs")
+require("dotenv").config()
+
+const privateKey = process.env.PRIVATE_KEY
+const rpcURL = process.env.RPC_URL
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("");
+  const provider = new ethers.providers.JsonRpcProvider(rpcURL)
 
-  const wallet = new ethers.Wallet("", provider);
+  const wallet = new ethers.Wallet(privateKey, provider)
 
-  const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
+  const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8")
   const binary = fs.readFileSync(
     "./SimpleStorage_sol_SimpleStorage.bin",
     "utf8"
-  );
+  )
 
-  const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
+  const contractFactory = new ethers.ContractFactory(abi, binary, wallet)
 
-  console.log("Deploying...");
-  const contract = await contractFactory.deploy();
-  await contract.deployTransaction.wait(1);
+  console.log("Deploying...")
+  const contract = await contractFactory.deploy()
+  await contract.deployTransaction.wait(1)
 
   // console.log("Transaction Data");
   // const nonce = await wallet.getTransactionCount();
@@ -33,19 +37,19 @@ async function main() {
   // await sentTxResponse.wait(1);
   // console.log(sentTxResponse);
 
-  const currentFavoriteNumber = await contract.retrieve();
-  console.log(`Favorite Number: ${String(currentFavoriteNumber)}`);
+  const currentFavoriteNumber = await contract.retrieve()
+  console.log(`Favorite Number: ${String(currentFavoriteNumber)}`)
 
-  const transactionResponse = await contract.store("7");
-  const transactionReceipt = await transactionResponse.wait(1);
+  const transactionResponse = await contract.store("7")
+  const transactionReceipt = await transactionResponse.wait(1)
 
-  const updatedFavoriteNumber = await contract.retrieve();
-  console.log(`Updated favorite Number: ${String(updatedFavoriteNumber)}`);
+  const updatedFavoriteNumber = await contract.retrieve()
+  console.log(`Updated favorite Number: ${String(updatedFavoriteNumber)}`)
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+    console.error(error)
+    process.exit(1)
+  })
